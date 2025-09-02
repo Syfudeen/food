@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/b8a3614e35.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .cart-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .cart-header {
+            background: linear-gradient(135deg, #ff4500 0%, #ff6b35 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .cart-items {
+            padding: 20px;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s;
+        }
+        .cart-item:hover {
+            background-color: #f8f9fa;
+        }
+        .item-info {
+            flex: 1;
+        }
+        .item-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .item-price {
+            color: #666;
+            font-size: 14px;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quantity-btn {
+            background: #ff4500;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quantity-btn:hover {
+            background: #ff6b35;
+        }
+        .quantity {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+        .item-total {
+            font-weight: bold;
+            font-size: 18px;
+            color: #ff4500;
+            min-width: 100px;
+            text-align: right;
+        }
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .remove-btn:hover {
+            background: #c82333;
+        }
+        .cart-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-top: 2px solid #ff4500;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .summary-total {
+            font-weight: bold;
+            font-size: 20px;
+            color: #ff4500;
+        }
+        .checkout-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.3s;
+        }
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+        }
+        .empty-cart {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        .empty-cart i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        .back-to-menu {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-to-menu a {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-to-menu a:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="cart-container">
+        <div class="cart-header">
+            <i class="fas fa-shopping-cart"></i> Your Shopping Cart
+        </div>
+        
+        <div id="cart-content">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+        
+        <div class="cart-summary" id="cart-summary" style="display: none;">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">₹0</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery Fee:</span>
+                <span>₹40</span>
+            </div>
+            <div class="summary-row summary-total">
+                <span>Total:</span>
+                <span id="total">₹0</span>
+            </div>
+            <button class="checkout-btn" onclick="proceedToCheckout()">
+                <i class="fas fa-whatsapp"></i> Order via WhatsApp
+            </button>
+        </div>
+        
+        <div class="back-to-menu">
+            <a href="menu.html">
+                <i class="fas fa-arrow-left"></i> Back to Menu
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        function renderCart() {
+            const cartContent = document.getElementById('cart-content');
+            const cartSummary = document.getElementById('cart-summary');
+            
+            if (cart.length === 0) {
+                cartContent.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Your cart is empty</h3>
+                        <p>Add some delicious items from our menu!</p>
+                    </div>
+                `;
+                cartSummary.style.display = 'none';
+                return;
+            }
+            
+            let html = '<div class="cart-items">';
+            let subtotal = 0;
+            
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                html += `
+                    <div class="cart-item">
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">₹${item.price} each</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                            <span class="quantity">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                        </div>
+                        <div class="item-total">₹${itemTotal}</div>
+                        <button class="remove-btn" onclick="removeItem(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            cartContent.innerHTML = html;
+            
+            // Update summary
+            const deliveryFee = 40;
+            const total = subtotal + deliveryFee;
+            
+            document.getElementById('subtotal').textContent = `₹${subtotal}`;
+            document.getElementById('total').textContent = `₹${total}`;
+            cartSummary.style.display = 'block';
+        }
+        
+        function updateQuantity(index, change) {
+            cart[index].quantity += change;
+            
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+        
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+        
+        async function proceedToCheckout() {
+            try {
+                // Get user info
+                const response = await fetch('/auth-status');
+                const data = await response.json();
+                
+                if (!data.loggedIn) {
+                    alert('Please login to place an order');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // Get user details
+                const userResponse = await fetch('/current-user');
+                const userData = await userResponse.json();
+                
+                // Prepare order message
+                let orderMessage = `🍽️ *NEW ORDER* 🍽️\n\n`;
+                orderMessage += `👤 *Customer Details:*\n`;
+                orderMessage += `Name: ${userData.name}\n`;
+                orderMessage += `Email: ${userData.email}\n`;
+                orderMessage += `Phone: ${userData.phone}\n`;
+                orderMessage += `Address: ${userData.address}\n\n`;
+                
+                orderMessage += `🛒 *Order Details:*\n`;
+                let subtotal = 0;
+                
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+                    orderMessage += `• ${item.name} x${item.quantity} = ₹${itemTotal}\n`;
+                });
+                
+                const deliveryFee = 40;
+                const total = subtotal + deliveryFee;
+                
+                orderMessage += `\n💰 *Payment Details:*\n`;
+                orderMessage += `Subtotal: ₹${subtotal}\n`;
+                orderMessage += `Delivery Fee: ₹${deliveryFee}\n`;
+                orderMessage += `Total: ₹${total}\n\n`;
+                orderMessage += `📞 *Contact: 8072007223*`;
+                
+                // Send to WhatsApp
+                const whatsappUrl = `https://wa.me/918072007223?text=${encodeURIComponent(orderMessage)}`;
+                window.open(whatsappUrl, '_blank');
+                
+                // Clear cart after order
+                localStorage.removeItem('cart');
+                alert('Order placed successfully! Redirecting to WhatsApp...');
+                
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('Error placing order. Please try again.');
+            }
+        }
+        
+        // Initialize cart
+        renderCart();
+    </script>
+</body>
+</html>

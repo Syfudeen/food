@@ -1,0 +1,20 @@
+import java.io.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+
+public class LoginServlet extends HttpServlet{
+    protected void doPost(HttpServletRequest req,HttpServletResponse res)throws IOException,ServletException{
+        String email=req.getParameter("email");
+        String pass=req.getParameter("pass");
+
+        try{
+            if(UserStore.validate(email,pass)){
+                res.sendRedirect("index.html");
+            }else{
+                res.getWriter().println("Invalid login");
+            }
+        }catch(Exception e){
+            res.getWriter().println("Error:"+e.getMessage());
+        }
+    }
+}

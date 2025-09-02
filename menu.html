@@ -1,0 +1,135 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <script src="https://kit.fontawesome.com/b8a3614e35.js" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                overflow-y: auto; 
+                background-color: black;
+                color: whitesmoke;
+                }
+            .menu-item {
+                position: relative;
+                text-align: center;
+            }
+            .add-to-cart {
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+                background: #ff4500;
+                color: white;
+                border: none;
+                padding: 8px 12px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 12px;
+            }
+            .add-to-cart:hover {
+                background: #ff6b35;
+            }
+            .cart-icon {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ff4500;
+                color: white;
+                padding: 10px;
+                border-radius: 50%;
+                cursor: pointer;
+                z-index: 1000;
+            }
+            .cart-count {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background: red;
+                color: white;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="cart-icon" onclick="goToCart()">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count" id="cart-count">0</span>
+        </div>
+        
+        <div class="menutitle">
+            <h2>OUR MENU <i class="fas fa-utensils"></i></h2>
+        </div>
+        <div class="menucont">
+            <div class="mimg-1 menu-item">
+                <img src="./pexels-enginakyurt-2673353.jpg">
+                <h5><a href="ccurry.html"> Chicken Curry</a></h5>
+                <p>Price: ₹250</p>
+                <button class="add-to-cart" onclick="addToCart('Chicken Curry', 250)">Add to Cart</button>
+            </div>
+            <div class="mimg-2 menu-item">
+                <img src="./b922edc0-9444-41c4-af44-531b1f96f8aa_39a490f0-bde3-4c4e-943f-c3544c1eff7b.JPG">
+                <h5><a href="mcurry.html"> Mutton Curry</a></h5>
+                <p>Price: ₹350</p>
+                <button class="add-to-cart" onclick="addToCart('Mutton Curry', 350)">Add to Cart</button>
+            </div>
+            <div class="mimg-3 menu-item">
+                <img src="./pexels-nadin-sh-78971847-19252760.jpg">
+                <h5>Spicy Chicken Noodles</h5>
+                <p>Price: ₹200</p>
+                <button class="add-to-cart" onclick="addToCart('Spicy Chicken Noodles', 200)">Add to Cart</button>
+            </div>
+            <div class="mimg-4 menu-item">
+                <img src="./pexels-ramazphotos-31651635.jpg">
+                <h5>Tteokbokki Japchae</h5>
+                <p>Price: ₹180</p>
+                <button class="add-to-cart" onclick="addToCart('Tteokbokki Japchae', 180)">Add to Cart</button>
+            </div>
+        </div>
+        
+        <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        function updateCartCount() {
+            document.getElementById('cart-count').textContent = cart.length;
+        }
+        
+        function addToCart(name, price) {
+            const existingItem = cart.find(item => item.name === name);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            
+            // Show success message
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Added!';
+            button.style.background = '#28a745';
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.background = '#ff4500';
+            }, 1000);
+        }
+        
+        function goToCart() {
+            window.location.href = 'cart.html';
+        }
+        
+        updateCartCount();
+        </script>
+    </body>
+</html>

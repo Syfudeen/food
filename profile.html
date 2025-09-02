@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <style>
+        body{ padding: 100px; font-family: 'Poppins', sans-serif; background: #f5f5f5; }
+        .profile-container{ max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .profile-header{ text-align: center; margin-bottom: 30px; }
+        .profile-avatar{ width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; position: relative; overflow: hidden; cursor: pointer; }
+        .profile-avatar img{ width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .profile-info{ margin-bottom: 20px; }
+        .profile-info label{ font-weight: bold; color: #333; display: inline-block; width: 120px; }
+        .profile-info span{ color: #666; }
+        .back-btn{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; border: none; border-radius: 25px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
+        .upload-section{ margin-top: 20px; text-align: center; }
+        .upload-section input{ display: none; }
+        .upload-label{ background: #ff4500; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: inline-block; transition: background-color 0.3s; }
+        .upload-label:hover{ background: #ff6b35; }
+        .upload-overlay{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); color: white; display: none; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; }
+        .profile-avatar:hover .upload-overlay{ display: flex; }
+        .message{ text-align: center; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success{ background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error{ background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar" onclick="document.getElementById('avatar').click()">
+                <img id="avatar-img" src="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="display: none;">
+                <div id="avatar-initial">U</div>
+                <div class="upload-overlay">Click to change</div>
+            </div>
+            <h2>My Profile</h2>
+        </div>
+        
+        <div id="message-container"></div>
+        
+        <div class="profile-info">
+            <p><label>Name:</label> <span id="user-name">Loading...</span></p>
+            <p><label>Email:</label> <span id="user-email">Loading...</span></p>
+            <p><label>Phone:</label> <span id="user-phone">Loading...</span></p>
+            <p><label>Address:</label> <span id="user-address">Loading...</span></p>
+        </div>
+        
+        <div class="upload-section">
+            <form id="avatarForm" action="/upload-avatar" method="post" enctype="multipart/form-data">
+                <input type="file" id="avatar" name="avatar" accept="image/*" onchange="uploadAvatar(event)">
+                <label for="avatar" class="upload-label">Change Avatar</label>
+                <div id="upload-status" style="margin-top: 10px; color: #28a745; font-size: 14px;"></div>
+            </form>
+        </div>
+        
+        <a href="index.html" class="back-btn">Back to Home</a>
+    </div>
+
+    <script>
+    async function loadProfile() {
+        try {
+            const response = await fetch('/current-user');
+            if (!response.ok) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const user = await response.json();
+            
+            // Update user info
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-phone').textContent = user.phone;
+            document.getElementById('user-address').textContent = user.address;
+            
+            // Update avatar
+            const avatarImg = document.getElementById('avatar-img');
+            const avatarInitial = document.getElementById('avatar-initial');
+            
+            if (user.avatar) {
+                avatarImg.src = `/uploads/${user.avatar}`;
+                avatarImg.style.display = 'block';
+                avatarInitial.style.display = 'none';
+            } else {
+                avatarInitial.textContent = user.name.charAt(0).toUpperCase();
+                avatarInitial.style.display = 'flex';
+            }
+            
+        } catch (error) {
+            console.error('Error loading profile:', error);
+            window.location.href = 'login.html';
+        }
+    }
+    
+    function uploadAvatar(event) {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('upload-status').textContent = 'Uploading...';
+            
+            const formData = new FormData();
+            formData.append('avatar', file);
+            
+            fetch('/upload-avatar', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    showMessage('Avatar updated successfully!', 'success');
+                    setTimeout(() => loadProfile(), 1000); // Reload profile after 1 second
+                } else {
+                    showMessage('Error uploading avatar', 'error');
+                }
+                document.getElementById('upload-status').textContent = '';
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                showMessage('Upload failed', 'error');
+                document.getElementById('upload-status').textContent = '';
+            });
+        }
+    }
+    
+    function showMessage(message, type) {
+        const container = document.getElementById('message-container');
+        container.innerHTML = `<div class="message ${type}">${message}</div>`;
+        setTimeout(() => {
+            container.innerHTML = '';
+        }, 3000);
+    }
+    
+    // Load profile when page loads
+    loadProfile();
+    </script>
+</body>
+</html>

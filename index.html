@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+     </head>
+        <body>
+        <div class="container">
+            3<img src="./ind.jpg" class="right-img">
+            <div class="nav">
+                <img src="./logo.png" class="logo">
+                <a href="chef.html">Chef</a>
+                <a href="contact.html">Contact</a>
+                <a href="about.html">About us</a>
+                 <a href="menu.html">Menu</a>
+                <div class="right">
+                    <div id="auth-section">
+                        <button id="login-btn"><a href="login.html">Login</a></button>
+                        <button id="signup-btn"><a href="signup.html">signup</a></button>
+                    </div>
+                    <div id="user-section" style="display: none;">
+                        <div class="user-dropdown">
+                            <div class="user-icon" onclick="toggleDropdown()">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <div id="dropdown-menu" class="dropdown-menu">
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="write">
+                <h3>It's Not Just Food,<br>It's Experience</h3>
+                <div class="grey">
+                    <h2 class="title">Tasty Foods</h2>
+                    <img src="./food.png">
+                </div>
+                <div class="search">
+                    <input type="text" placeholder="search" class="searchbox">
+                     <button type="submit">SEARCH</button>
+                </div>
+            </div> 
+            <div class="quote">
+                    <div class="line"></div>
+                    <h5 class="words">Some Top Restaurant Food For<br>Dining In Or Take Away</h5>
+                </div>     
+        </div>
+        </body>
+        <script>
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch('/auth-status');
+                const data = await response.json();
+                
+                if (data.loggedIn) {
+                    document.getElementById('auth-section').style.display = 'none';
+                    document.getElementById('user-section').style.display = 'block';
+                } else {
+                    document.getElementById('auth-section').style.display = 'block';
+                    document.getElementById('user-section').style.display = 'none';
+                }
+            } catch (error) {
+                console.log('Auth check failed, showing login buttons');
+                document.getElementById('auth-section').style.display = 'block';
+                document.getElementById('user-section').style.display = 'none';
+            }
+        }
+        
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdown-menu');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('dropdown-menu');
+            const userIcon = document.querySelector('.user-icon');
+            
+            if (!userIcon.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        checkAuthStatus();
+        </script>
+</html>
