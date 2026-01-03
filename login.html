@@ -34,24 +34,9 @@
 	</div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js"></script>
 <script>
-	// Simple Firebase configuration
-	const firebaseConfig = {
-		apiKey: "AIzaSyD5KKgtq-2Qd__pn_w6zWUPJpUwtaTw4Fg",
-		authDomain: "restaurant-app-fed29.firebaseapp.com",
-		projectId: "restaurant-app-fed29",
-		storageBucket: "restaurant-app-fed29.firebasestorage.app",
-		messagingSenderId: "613195852332",
-		appId: "1:613195852332:web:aa3a76d763d87cc2a07f89"
-	};
-
-	// Initialize Firebase
-	firebase.initializeApp(firebaseConfig);
-	const auth = firebase.auth();
-
-	console.log('Firebase initialized:', auth);
+	// Test if Firebase loads at all
+	console.log('Login page loaded');
 
 	function handleLogin(event) {
 		event.preventDefault();
@@ -59,27 +44,22 @@
 		const email = document.getElementById('email').value;
 		const password = document.getElementById('password').value;
 		
-		console.log('Attempting login with:', email);
+		console.log('Login attempt with:', email);
 
-		auth.signInWithEmailAndPassword(email, password)
-			.then((userCredential) => {
-				const user = userCredential.user;
-				console.log('Login successful:', user);
-				
-				// Store user in localStorage
-				localStorage.setItem('currentUser', JSON.stringify({
-					name: user.displayName || email.split('@')[0],
-					email: user.email,
-					uid: user.uid
-				}));
-				
-				alert('Login successful!');
-				window.location.href = 'index.html';
-			})
-			.catch((error) => {
-				console.error('Login error:', error);
-				alert('Login failed: ' + error.message);
-			});
+		// Simple test - just store in localStorage for now
+		try {
+			localStorage.setItem('currentUser', JSON.stringify({
+				name: email.split('@')[0],
+				email: email,
+				uid: 'test-uid'
+			}));
+			
+			alert('Login successful! (Test Mode)');
+			window.location.href = 'index.html';
+		} catch (error) {
+			console.error('Storage error:', error);
+			alert('Login failed: ' + error.message);
+		}
 	}
 
 	function showForgotPassword(e){
