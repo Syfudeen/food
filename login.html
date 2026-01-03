@@ -34,6 +34,14 @@
                 .then((userCredential) => {
                     const user = userCredential.user;
                     console.log('Login successful:', user);
+                    
+                    // Store user in localStorage for session management
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        name: user.displayName || email.split('@')[0],
+                        email: user.email,
+                        uid: user.uid
+                    }));
+                    
                     alert('Login successful!');
                     window.location.href = 'index.html';
                 })

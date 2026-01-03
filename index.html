@@ -30,7 +30,7 @@
                             </div>
                             <div id="dropdown-menu" class="dropdown-menu">
                                 <a href="/profile">Profile</a>
-                                <a href="/logout">Logout</a>
+                                <a href="#" onclick="logout()">Logout</a>
                             </div>
                         </div>
                     </div>
@@ -54,14 +54,21 @@
         </div>
         </body>
         <script>
-        async function checkAuthStatus() {
+        async function checkAuth() {
             try {
-                const response = await fetch('/auth-status');
-                const data = await response.json();
+                // Check Firebase user session in localStorage
+                const currentUser = localStorage.getItem('currentUser');
                 
-                if (data.loggedIn) {
+                if (currentUser) {
+                    const user = JSON.parse(currentUser);
                     document.getElementById('auth-section').style.display = 'none';
                     document.getElementById('user-section').style.display = 'block';
+                    
+                    // Update user name if needed
+                    const userNameElement = document.getElementById('user-name');
+                    if (userNameElement) {
+                        userNameElement.textContent = user.name;
+                    }
                 } else {
                     document.getElementById('auth-section').style.display = 'block';
                     document.getElementById('user-section').style.display = 'none';
@@ -78,6 +85,14 @@
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         }
         
+        function logout() {
+            // Clear Firebase user session
+            localStorage.removeItem('currentUser');
+            document.getElementById('auth-section').style.display = 'block';
+            document.getElementById('user-section').style.display = 'none';
+            window.location.href = 'index.html';
+        }
+        
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('dropdown-menu');
             const userIcon = document.querySelector('.user-icon');
@@ -87,6 +102,6 @@
             }
         });
         
-        checkAuthStatus();
+        checkAuth();
         </script>
 </html>
