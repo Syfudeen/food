@@ -387,29 +387,12 @@
             });
             localStorage.setItem('orders', JSON.stringify(orders));
             
-            // Show success to customer
-            alert('Order placed successfully! Please click "Send Order" to notify the restaurant.');
+            // AUTOMATICALLY send WhatsApp to restaurant owner
+            const whatsappUrl = `https://wa.me/918072007223?text=${encodeURIComponent(orderMessage)}`;
+            window.open(whatsappUrl, '_blank');
             
-            // Show popup with ONE-CLICK WhatsApp send
-            const orderDiv = document.createElement('div');
-            orderDiv.innerHTML = `
-                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; align-items: center; justify-content: center;">
-                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; max-height: 80vh; overflow-y: auto; text-align: center;">
-                        <h2 style="color: #ff4500; margin-bottom: 20px;">🍽️ ORDER READY TO SEND</h2>
-                        <p style="font-size: 16px; margin-bottom: 20px;">Click the button below to automatically send your order to the restaurant via WhatsApp.</p>
-                        <div style="background: #25D366; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                            <h3 style="margin: 0;">📱 WhatsApp Ready</h3>
-                            <p style="margin: 10px 0 0 0;">Your order details are prepared and ready to send to the restaurant.</p>
-                        </div>
-                        <button onclick="window.open('https://wa.me/918072007223?text=${encodeURIComponent(orderMessage)}', '_blank'); this.parentElement.parentElement.parentElement.remove();" 
-                                style="background: #25D366; color: white; border: none; padding: 15px 30px; border-radius: 5px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; margin-bottom: 10px;">
-                            📱 SEND ORDER TO RESTAURANT
-                        </button>
-                        <p style="font-size: 12px; color: #666;">This will open WhatsApp with your order ready to send</p>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(orderDiv);
+            // Show order confirmation message (same as before)
+            alert('Order placed successfully! We will contact you soon.');
             
             // Clear cart
             cart = [];
