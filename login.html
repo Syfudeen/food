@@ -4,6 +4,41 @@
 	<title>Login Page</title>
 	<link rel="stylesheet" href="style.css">
 	<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+	<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5KKgtq-2Qd__pn_w6zWUPJpUwtaTw4Fg",
+            authDomain: "restaurant-app-fed29.firebaseapp.com",
+            projectId: "restaurant-app-fed29",
+            storageBucket: "restaurant-app-fed29.firebasestorage.app",
+            messagingSenderId: "613195852332",
+            appId: "1:613195852332:web:aa3a76d763d87cc2a07f89"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.loginUser = function(event) {
+            event.preventDefault();
+
+            const email = document.querySelector('input[name="email"]').value;
+            const password = document.querySelector('input[name="password"]').value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    console.log('Login successful:', user);
+                    alert('Login successful!');
+                    window.location.href = 'index.html';
+                })
+                .catch((error) => {
+                    console.error('Login error:', error);
+                    alert('Login failed: ' + error.message);
+                });
+        }
+    </script>
 	<style>
 		body{
 			padding-top:100px;
@@ -44,7 +79,7 @@
 	<h3 class="form-title">LOGIN</h3>
 	<div id="message-container"></div>
 
-	<form class="form-body" action="/login" method="post">
+	<form class="form-body" onsubmit="loginUser(event)">
 		<label>Email:</label>
 		<input type="email" name="email" id="email" required>
 
@@ -79,58 +114,32 @@ function showMessage(message,type){
 	container.innerHTML=`<div class="message ${type}">${message}</div>`;
 	setTimeout(()=>{container.innerHTML=""},5000);
 }
-</script>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyD5KKgtq-2Qd__pn_w6zWUPJpUwtaTw4Fg",
-    authDomain: "restaurant-app-fed29.firebaseapp.com",
-    projectId: "restaurant-app-fed29",
-    storageBucket: "restaurant-app-fed29.firebasestorage.app",
-    messagingSenderId: "613195852332",
-    appId: "1:613195852332:web:aa3a76d763d87cc2a07f89"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-window.handleForgotPassword = function(e) {
-    e.preventDefault();
-    const email = document.getElementById("forgot-email").value;
-    
-    // First check if user exists in our database
-    fetch('/forgot-password', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // User exists, now send Firebase reset email
-            sendPasswordResetEmail(auth, email)
-                .then(() => {
-                    showMessage('Password reset link sent to your email!', 'success');
-                    document.getElementById('forgot-form').style.display = 'none';
-                })
-                .catch((error) => {
-                    console.error('Firebase error:', error);
-                    showMessage('Failed to send reset link: ' + error.message, 'error');
-                });
-        } else {
-            showMessage(data.message || 'Email not found', 'error');
-        }
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-        showMessage('Failed to process request', 'error');
-    });
-};
+function handleForgotPassword(e){
+	e.preventDefault();
+	const email=document.getElementById('forgot-email').value;
+	
+	// Send to backend for password reset
+	fetch('/forgot-password', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({email})
+	})
+	.then(response => response.json())
+	.then(data => {
+		if(data.success){
+			showMessage('Password reset link sent to your email','success');
+		} else {
+			showMessage(data.message,'error');
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
+		showMessage('Error sending reset link','error');
+	});
+}
 </script>
 
 </body>

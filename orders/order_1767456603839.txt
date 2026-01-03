@@ -1,0 +1,17 @@
+🍽️ NEW ORDER RECEIVED 🍽️
+
+👤 Customer Details:
+Name: Kaviya k
+Phone: 08072007223
+Address: 2/47 mariamman kovil street
+
+🛒 Order Items:
+Indulge in the rich and creamy flavors of our signature Chicken
+                                    Butter Masala Chicken - ₹250 x 1 = ₹250
+
+💰 Payment Details:
+Subtotal: ₹250
+Delivery Fee: ₹40
+Total Amount: ₹290
+
+📞 Contact Customer: 08072007223
