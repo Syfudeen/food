@@ -123,26 +123,8 @@ function handleForgotPassword(e){
 	e.preventDefault();
 	const email=document.getElementById('forgot-email').value;
 	
-	// Send to backend for password reset
-	fetch('/forgot-password', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({email})
-	})
-	.then(response => response.json())
-	.then(data => {
-		if(data.success){
-			showMessage('Password reset link sent to your email','success');
-		} else {
-			showMessage(data.message,'error');
-		}
-	})
-	.catch(error => {
-		console.error('Error:', error);
-		showMessage('Error sending reset link','error');
-	});
+	// Simple alert for now - Firebase password reset can be added later
+	alert('Password reset functionality will be available soon. Please contact support for password reset.');
 }
 </script>
 
