@@ -4,6 +4,8 @@
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/b8a3614e35.js" crossorigin="anonymous"></script>
     <style>
         body {
@@ -181,9 +183,51 @@
                 <span>Total:</span>
                 <span id="total">₹0</span>
             </div>
-            <button class="checkout-btn" onclick="proceedToCheckout()">
-                <i class="fas fa-whatsapp"></i> Order via WhatsApp
-            </button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="checkout-btn" onclick="showPlaceOrderModal()" style="flex: 1; background: linear-gradient(135deg, #ff4500 0%, #ff6b35 100%);">
+                    <i class="fas fa-shopping-cart"></i> Place Order
+                </button>
+            </div>
+        </div>
+        
+        <!-- Place Order Modal -->
+        <div class="modal fade" id="placeOrderModal" tabindex="-1" aria-labelledby="placeOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="placeOrderModalLabel">Confirm Your Order</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Your order contains:</p>
+                        <ul id="modalOrderItems"></ul>
+                        <p><strong>Total Amount: ₹<span id="modalTotalAmount">0</span></strong></p>
+                        <hr>
+                        <p>Please confirm your details:</p>
+                        <form id="placeOrderForm">
+                            <div class="mb-3">
+                                <label for="customerName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="customerName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="customerPhone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="customerPhone" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="customerAddress" class="form-label">Delivery Address</label>
+                                <textarea class="form-control" id="customerAddress" rows="3" required></textarea>
+                            </div>
+                        </form>
+                        <div class="alert alert-info">
+                            <i class="fas fa-phone"></i> For any queries, contact us at: <strong>8072007223</strong>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-success" onclick="confirmPlaceOrder()">Confirm Order</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="back-to-menu">
@@ -193,6 +237,9 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
     <script>
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         
@@ -265,6 +312,157 @@
             cart.splice(index, 1);
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
+        }
+        
+        function showPlaceOrderModal() {
+            const modalOrderItems = document.getElementById('modalOrderItems');
+            const modalTotalAmount = document.getElementById('modalTotalAmount');
+            
+            modalOrderItems.innerHTML = '';
+            let subtotal = 0;
+            
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name} - ₹${item.price} x ${item.quantity}`;
+                modalOrderItems.appendChild(li);
+                subtotal += item.price * item.quantity;
+            });
+            
+            const deliveryFee = 40;
+            const total = subtotal + deliveryFee;
+            modalTotalAmount.textContent = total;
+            
+            const modal = new bootstrap.Modal(document.getElementById('placeOrderModal'));
+            modal.show();
+        }
+        
+        function confirmPlaceOrder() {
+            const customerName = document.getElementById('customerName').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+            const customerAddress = document.getElementById('customerAddress').value;
+            
+            if (!customerName || !customerPhone || !customerAddress) {
+                alert('Please fill in all details');
+                return;
+            }
+            
+            // Prepare order message
+            let message = 'NEW ORDER:\n\n';
+            message += 'Customer Details:\n';
+            message += `Name: ${customerName}\n`;
+            message += `Phone: ${customerPhone}\n`;
+            message += `Address: ${customerAddress}\n\n`;
+            message += 'Order Items:\n';
+            
+            let subtotal = 0;
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                message += `${item.name} - ₹${item.price} x ${item.quantity}\n`;
+            });
+            
+            const deliveryFee = 40;
+            const total = subtotal + deliveryFee;
+            message += `\nSubtotal: ₹${subtotal}\n`;
+            message += `Delivery Fee: ₹${deliveryFee}\n`;
+            message += `Total Amount: ₹${total}`;
+            
+            // Send order to backend
+            fetch('http://localhost:3000/send-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    customerName,
+                    customerPhone,
+                    customerAddress,
+                    orderItems: cart,
+                    subtotal,
+                    deliveryFee,
+                    total
+                })
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    // Show order details in alert (normal message)
+                    let orderDetails = '\n\nORDER DETAILS:\n';
+                    orderDetails += `Customer: ${customerName}\n`;
+                    orderDetails += `Phone: ${customerPhone}\n`;
+                    orderDetails += `Address: ${customerAddress}\n\n`;
+                    orderDetails += 'Items:\n';
+                    
+                    cart.forEach(item => {
+                        orderDetails += `${item.name} - ₹${item.price} x ${item.quantity}\n`;
+                    });
+                    
+                    orderDetails += `\nTotal: ₹${total}\n`;
+                    orderDetails += `Contact: 8072007223`;
+                    
+                    alert('Order placed successfully!' + orderDetails);
+                    
+                    // Also create a visible notification on the page
+                    const notificationDiv = document.createElement('div');
+                    notificationDiv.innerHTML = `
+                        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                    background: red; color: white; padding: 20px; border-radius: 10px; 
+                                    z-index: 9999; font-size: 18px; text-align: center; 
+                                    box-shadow: 0 0 20px rgba(255,0,0,0.8); animation: blink 1s infinite;">
+                            <h2>🚨 NEW ORDER RECEIVED 🚨</h2>
+                            <p><strong>Customer:</strong> ${customerName}</p>
+                            <p><strong>Phone:</strong> ${customerPhone}</p>
+                            <p><strong>Total:</strong> ₹${total}</p>
+                            <p><strong>CALL NOW: ${customerPhone}</strong></p>
+                            <button onclick="this.parentElement.parentElement.remove()" 
+                                    style="background: white; color: red; border: none; padding: 10px 20px; 
+                                           border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                                I've Seen This Order
+                            </button>
+                        </div>
+                        <style>
+                            @keyframes blink {
+                                0% { opacity: 1; }
+                                50% { opacity: 0.5; }
+                                100% { opacity: 1; }
+                            }
+                        </style>
+                    `;
+                    document.body.appendChild(notificationDiv);
+                    
+                    // Auto-remove after 30 seconds
+                    setTimeout(() => {
+                        if (notificationDiv.parentElement) {
+                            notificationDiv.parentElement.remove();
+                        }
+                    }, 30000);
+                    
+                } else {
+                    alert('Error placing order. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Error placing order. Please try again.');
+            });
+            
+            // Clear cart and close modal
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('placeOrderModal'));
+            modal.hide();
+            
+            // Reset form
+            document.getElementById('placeOrderForm').reset();
         }
         
         async function proceedToCheckout() {

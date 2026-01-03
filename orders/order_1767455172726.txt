@@ -1,0 +1,16 @@
+🍽️ NEW ORDER RECEIVED 🍽️
+
+👤 Customer Details:
+Name: Kaviya k
+Phone: 08072007223
+Address: 2/47 mariamman kovil street
+
+🛒 Order Items:
+Savor the bold and smoky flavors of our classic Chicken Tandoori Chicken - ₹280 x 1 = ₹280
+
+💰 Payment Details:
+Subtotal: ₹280
+Delivery Fee: ₹40
+Total Amount: ₹320
+
+📞 Contact Customer: 08072007223

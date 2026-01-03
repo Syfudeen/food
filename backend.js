@@ -4,8 +4,10 @@ const mysql=require('mysql')
 const path=require('path')
 const session=require('express-session')
 const multer=require('multer')
+const cors=require('cors')
 
 const app=express()
+app.use(cors())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
 app.use(express.static(__dirname))
@@ -50,9 +52,30 @@ db.connect(err=>{
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     `
+    
+    const createOrdersTable=`
+        CREATE TABLE IF NOT EXISTS orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            customer_name VARCHAR(255) NOT NULL,
+            customer_phone VARCHAR(20) NOT NULL,
+            customer_address TEXT NOT NULL,
+            order_items TEXT NOT NULL,
+            subtotal DECIMAL(10,2) NOT NULL,
+            delivery_fee DECIMAL(10,2) NOT NULL,
+            total DECIMAL(10,2) NOT NULL,
+            status VARCHAR(50) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    `
+    
     db.query(createTableQuery,(err,result)=>{
-        if(err) console.log("Error creating table:", err)
-        else console.log("Users table ready")
+        if(err){ console.log("Users Table Error:", err); throw err }
+        console.log("Users table ready")
+    })
+    
+    db.query(createOrdersTable,(err,result)=>{
+        if(err){ console.log("Orders Table Error:", err); throw err }
+        console.log("Orders table ready")
     })
 })
 
@@ -142,6 +165,93 @@ app.get('/debug-users',(req,res)=>{
         res.json({users:results, count:results.length})
     })
 })
+
+// ORDER HANDLING
+app.post('/send-order', (req, res) => {
+    const { customerName, customerPhone, customerAddress, orderItems, subtotal, deliveryFee, total } = req.body;
+    
+    // Prepare order message
+    let orderMessage = '🍽️ NEW ORDER RECEIVED 🍽️\n\n';
+    orderMessage += '👤 Customer Details:\n';
+    orderMessage += `Name: ${customerName}\n`;
+    orderMessage += `Phone: ${customerPhone}\n`;
+    orderMessage += `Address: ${customerAddress}\n\n`;
+    orderMessage += '🛒 Order Items:\n';
+    
+    orderItems.forEach(item => {
+        orderMessage += `${item.name} - ₹${item.price} x ${item.quantity} = ₹${item.price * item.quantity}\n`;
+    });
+    
+    orderMessage += `\n💰 Payment Details:\n`;
+    orderMessage += `Subtotal: ₹${subtotal}\n`;
+    orderMessage += `Delivery Fee: ₹${deliveryFee}\n`;
+    orderMessage += `Total Amount: ₹${total}\n`;
+    orderMessage += `\n📞 Contact Customer: ${customerPhone}`;
+    
+    // VERY LOUD NOTIFICATION - Multiple ways to notify you
+    console.log('\n' + '🚨🚨🚨 NEW ORDER 🚨🚨🚨'.repeat(5));
+    console.log('🔔 IMMEDIATE ACTION REQUIRED 🔔');
+    console.log(orderMessage);
+    console.log('🚨🚨🚨 NEW ORDER 🚨🚨🚨'.repeat(5) + '\n');
+    
+    // Save order to database
+    const orderQuery = 'INSERT INTO orders (customer_name, customer_phone, customer_address, order_items, subtotal, delivery_fee, total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    const orderItemsJson = JSON.stringify(orderItems);
+    
+    db.query(orderQuery, [customerName, customerPhone, customerAddress, orderItemsJson, subtotal, deliveryFee, total, 'pending'], (err, result) => {
+        if (err) {
+            console.error('Error saving order to database:', err);
+        } else {
+            console.log(`✅ Order saved to database with ID: ${result.insertId}`);
+        }
+    });
+    
+    // Create order file
+    const fs = require('fs');
+    const orderFileName = `order_${Date.now()}.txt`;
+    const orderFilePath = `./orders/${orderFileName}`;
+    
+    if (!fs.existsSync('./orders')) {
+        fs.mkdirSync('./orders');
+    }
+    
+    fs.writeFileSync(orderFilePath, orderMessage);
+    console.log(`📄 Order saved to file: ${orderFilePath}`);
+    
+    // Create a simple notification sound (beep) - works on Windows
+    process.stdout.write('\x07'); // Bell character
+    
+    // WhatsApp URL for you
+    const ownerWhatsappUrl = `https://wa.me/918072007223?text=${encodeURIComponent(orderMessage)}`;
+    console.log(`📱 WHATSAPP URL: ${ownerWhatsappUrl}`);
+    
+    // Also create a desktop notification if possible
+    try {
+        const { exec } = require('child_process');
+        // Windows notification
+        exec(`msg * "NEW ORDER RECEIVED! Customer: ${customerName}, Phone: ${customerPhone}, Total: ₹${total}"`, (error, stdout, stderr) => {
+            if (error) {
+                console.log('Desktop notification failed, but order received');
+            }
+        });
+    } catch (e) {
+        console.log('Desktop notification not available');
+    }
+    
+    console.log('\n🔥🔥🔥 IMMEDIATE ACTIONS 🔥🔥🔥');
+    console.log('1. CALL CUSTOMER NOW:', customerPhone);
+    console.log('2. SEND WHATSAPP TO YOURSELF');
+    console.log('3. PROCESS PAYMENT: ₹' + total);
+    console.log('4. ARRANGE DELIVERY TO:', customerAddress);
+    
+    res.json({ 
+        success: true, 
+        message: 'Order received successfully! We will contact you soon.',
+        orderId: Date.now(),
+        orderSaved: true,
+        notification: 'Order sent to restaurant owner'
+    });
+});
 
 // FORGOT PASSWORD - Simple version
 app.post('/forgot-password',(req,res)=>{
