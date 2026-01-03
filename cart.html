@@ -350,8 +350,49 @@
                 return;
             }
             
-            // Simple test - just show success
-            alert('Order placed successfully!\n\nCustomer: ' + customerName + '\nPhone: ' + customerPhone + '\nTotal: ₹' + (cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 40));
+            // Calculate total
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = 40;
+            const total = subtotal + deliveryFee;
+            
+            // Create order message
+            let orderMessage = '🍽️ NEW ORDER RECEIVED 🍽️\n\n';
+            orderMessage += '👤 Customer Details:\n';
+            orderMessage += `Name: ${customerName}\n`;
+            orderMessage += `Phone: ${customerPhone}\n`;
+            orderMessage += `Address: ${customerAddress}\n\n`;
+            orderMessage += '🛒 Order Items:\n';
+            
+            cart.forEach(item => {
+                orderMessage += `${item.name} - ₹${item.price} x ${item.quantity} = ₹${item.price * item.quantity}\n`;
+            });
+            
+            orderMessage += `\n💰 Payment Details:\n`;
+            orderMessage += `Subtotal: ₹${subtotal}\n`;
+            orderMessage += `Delivery Fee: ₹${deliveryFee}\n`;
+            orderMessage += `Total Amount: ₹${total}\n`;
+            orderMessage += `\n📞 Contact Customer: ${customerPhone}`;
+            
+            // Store order in localStorage
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.push({
+                customerName,
+                customerPhone,
+                customerAddress,
+                orderItems: cart,
+                subtotal,
+                deliveryFee,
+                total,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('orders', JSON.stringify(orders));
+            
+            // Show success to customer
+            alert('Order placed successfully! We will contact you soon.');
+            
+            // Open WhatsApp with order details for restaurant owner
+            const whatsappUrl = `https://wa.me/918072007223?text=${encodeURIComponent(orderMessage)}`;
+            window.open(whatsappUrl, '_blank');
             
             // Clear cart
             cart = [];
