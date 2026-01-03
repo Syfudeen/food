@@ -368,7 +368,59 @@
             message += `Total Amount: ₹${total}`;
             
             // Send order to backend
-            fetch('http://localhost:3000/send-order', {
+            const orderUrl = window.location.hostname === 'localhost' 
+                ? 'http://localhost:3000/send-order' 
+                : 'https://your-server-url.com/send-order'; // Replace with actual server URL if available
+            
+            // For now, if not localhost, just show success message
+            if (window.location.hostname !== 'localhost') {
+                // Store order in localStorage for demo purposes
+                const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                orders.push({
+                    customerName,
+                    customerPhone,
+                    customerAddress,
+                    orderItems: cart,
+                    subtotal,
+                    deliveryFee,
+                    total,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('orders', JSON.stringify(orders));
+                
+                // Show order details
+                let orderDetails = '\n\nORDER DETAILS:\n';
+                orderDetails += `Customer: ${customerName}\n`;
+                orderDetails += `Phone: ${customerPhone}\n`;
+                orderDetails += `Address: ${customerAddress}\n\n`;
+                orderDetails += 'Items:\n';
+                
+                cart.forEach(item => {
+                    orderDetails += `${item.name} - ₹${item.price} x ${item.quantity}\n`;
+                });
+                
+                orderDetails += `\nTotal: ₹${total}\n`;
+                orderDetails += `Contact: 8072007223`;
+                
+                alert('Order placed successfully!' + orderDetails);
+                
+                // Clear cart and close modal
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('placeOrderModal'));
+                modal.hide();
+
+                // Reset form
+                document.getElementById('customerName').value = '';
+                document.getElementById('customerPhone').value = '';
+                document.getElementById('customerAddress').value = '';
+                
+                return;
+            }
+            
+            fetch(orderUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
