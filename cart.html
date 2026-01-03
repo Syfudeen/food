@@ -337,139 +337,35 @@
         }
         
         function confirmPlaceOrder() {
+            console.log('Order button clicked');
+            
             const customerName = document.getElementById('customerName').value;
             const customerPhone = document.getElementById('customerPhone').value;
             const customerAddress = document.getElementById('customerAddress').value;
+            
+            console.log('Form data:', {customerName, customerPhone, customerAddress});
             
             if (!customerName || !customerPhone || !customerAddress) {
                 alert('Please fill in all details');
                 return;
             }
             
-            // Prepare order message
-            let message = 'NEW ORDER:\n\n';
-            message += 'Customer Details:\n';
-            message += `Name: ${customerName}\n`;
-            message += `Phone: ${customerPhone}\n`;
-            message += `Address: ${customerAddress}\n\n`;
-            message += 'Order Items:\n';
+            // Simple test - just show success
+            alert('Order placed successfully!\n\nCustomer: ' + customerName + '\nPhone: ' + customerPhone + '\nTotal: ₹' + (cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 40));
             
-            let subtotal = 0;
-            cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
-                subtotal += itemTotal;
-                message += `${item.name} - ₹${item.price} x ${item.quantity}\n`;
-            });
-            
-            const deliveryFee = 40;
-            const total = subtotal + deliveryFee;
-            message += `\nSubtotal: ₹${subtotal}\n`;
-            message += `Delivery Fee: ₹${deliveryFee}\n`;
-            message += `Total Amount: ₹${total}`;
-            
-            // Simple order placement - no backend needed
-            console.log('Placing order...');
-            
-            // Store order in localStorage
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            orders.push({
-                customerName,
-                customerPhone,
-                customerAddress,
-                orderItems: cart,
-                subtotal,
-                deliveryFee,
-                total,
-                timestamp: new Date().toISOString()
-            });
-            localStorage.setItem('orders', JSON.stringify(orders));
-            
-            // Show order details
-            let orderDetails = '\n\nORDER DETAILS:\n';
-            orderDetails += `Customer: ${customerName}\n`;
-            orderDetails += `Phone: ${customerPhone}\n`;
-            orderDetails += `Address: ${customerAddress}\n\n`;
-            orderDetails += 'Items:\n';
-            
-            cart.forEach(item => {
-                orderDetails += `${item.name} - ₹${item.price} x ${item.quantity}\n`;
-            });
-            
-            orderDetails += `\nTotal: ₹${total}\n`;
-            orderDetails += `Contact: 8072007223`;
-            
-            alert('Order placed successfully!' + orderDetails);
-            
-            // Clear cart and close modal
+            // Clear cart
             cart = [];
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
-
+            
+            // Close modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('placeOrderModal'));
             modal.hide();
-
+            
             // Reset form
             document.getElementById('customerName').value = '';
             document.getElementById('customerPhone').value = '';
             document.getElementById('customerAddress').value = '';
-            
-            return;
-        }
-        
-        async function proceedToCheckout() {
-            try {
-                // Get user info
-                const response = await fetch('/auth-status');
-                const data = await response.json();
-                
-                if (!data.loggedIn) {
-                    alert('Please login to place an order');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                // Get user details
-                const userResponse = await fetch('/current-user');
-                const userData = await userResponse.json();
-                
-                // Prepare order message
-                let orderMessage = `🍽️ *NEW ORDER* 🍽️\n\n`;
-                orderMessage += `👤 *Customer Details:*\n`;
-                orderMessage += `Name: ${userData.name}\n`;
-                orderMessage += `Email: ${userData.email}\n`;
-                orderMessage += `Phone: ${userData.phone}\n`;
-                orderMessage += `Address: ${userData.address}\n\n`;
-                
-                orderMessage += `🛒 *Order Details:*\n`;
-                let subtotal = 0;
-                
-                cart.forEach(item => {
-                    const itemTotal = item.price * item.quantity;
-                    subtotal += itemTotal;
-                    orderMessage += `• ${item.name} x${item.quantity} = ₹${itemTotal}\n`;
-                });
-                
-                const deliveryFee = 40;
-                const total = subtotal + deliveryFee;
-                
-                orderMessage += `\n💰 *Payment Details:*\n`;
-                orderMessage += `Subtotal: ₹${subtotal}\n`;
-                orderMessage += `Delivery Fee: ₹${deliveryFee}\n`;
-                orderMessage += `Total: ₹${total}\n\n`;
-                orderMessage += `📞 *Contact: 8072007223*`;
-                
-                // Send to WhatsApp
-                const whatsappUrl = `https://wa.me/918072007223?text=${encodeURIComponent(orderMessage)}`;
-                window.open(whatsappUrl, '_blank');
-                
-                // Clear cart after order
-                localStorage.removeItem('cart');
-                alert('Order placed successfully! Redirecting to WhatsApp...');
-                
-            } catch (error) {
-                console.error('Checkout error:', error);
-                alert('Error placing order. Please try again.');
-            }
         }
         
         // Initialize cart
