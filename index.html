@@ -29,7 +29,7 @@
                                 </svg>
                             </div>
                             <div id="dropdown-menu" class="dropdown-menu">
-                                <a href="/profile">Profile</a>
+                                <a href="profile.html">Profile</a>
                                 <a href="#" onclick="logout()">Logout</a>
                             </div>
                         </div>
@@ -75,13 +75,13 @@
                     const dropdownMenu = document.getElementById('dropdown-menu');
                     if (user.email === 'kit27.csbs29@gmail.com') {
                         dropdownMenu.innerHTML = `
-                            <a href="/admin">Admin</a>
-                            <a href="/profile">Profile</a>
+                            <a href="admin.html">Admin</a>
+                            <a href="profile.html">Profile</a>
                             <a href="#" onclick="logout()">Logout</a>
                         `;
                     } else {
                         dropdownMenu.innerHTML = `
-                            <a href="/profile">Profile</a>
+                            <a href="profile.html">Profile</a>
                             <a href="#" onclick="logout()">Logout</a>
                         `;
                     }

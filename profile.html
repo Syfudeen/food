@@ -72,149 +72,40 @@
 <body>
     <div class="profile-container">
         <div class="profile-header">
-            <div class="profile-avatar" onclick="document.getElementById('avatar').click()">
-                <img id="avatar-img" src="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="display: none;">
-                <div id="avatar-initial">U</div>
-                <div class="upload-overlay">Click to change</div>
-            </div>
             <h2>My Profile</h2>
         </div>
-        
-        <div id="message-container"></div>
-        
-        <div class="profile-info">
-            <p><label>Name:</label> <span id="user-name">Loading...</span></p>
-            <p><label>Email:</label> <span id="user-email">Loading...</span></p>
-            <p><label>Phone:</label> <span id="user-phone">Loading...</span></p>
-            <p><label>Address:</label> <span id="user-address">Loading...</span></p>
-        </div>
-        
-        <div class="upload-section">
-            <form id="avatarForm" action="/upload-avatar" method="post" enctype="multipart/form-data">
-                <input type="file" id="avatar" name="avatar" accept="image/*" onchange="uploadAvatar(event)">
-                <label for="avatar" class="upload-label">Change Avatar
-                <script>
-        // Check if user is logged in
-        const currentUser = localStorage.getItem('currentUser');
-        if (!currentUser) {
-            document.body.innerHTML = `
-                <div style="text-align: center; padding: 100px; color: #ff4500;">
-                    <h2>Please Login First</h2>
-                    <p>You need to login to view your profile.</p>
-                    <button onclick="window.location.href='login.html'" style="background: #ff4500; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer;">Go to Login</button>
+
+        <div class="profile-content">
+            <div class="user-info">
+                <h3>Account Information</h3>
+                <div class="info-item">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value" id="user-name">Loading...</span>
                 </div>
-            `;
-            return;
-        }
+                <div class="info-item">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value" id="user-email">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">User ID:</span>
+                    <span class="info-value" id="user-id">Loading...</span>
+                </div>
+            </div>
 
-        // Load user data directly from localStorage (no backend call)
-        const user = JSON.parse(currentUser);
-        
-        // Display user information
-        document.getElementById('user-name').textContent = user.name || 'Not available';
-        document.getElementById('user-email').textContent = user.email || 'Not available';
-        document.getElementById('user-id').textContent = user.uid || 'Not available';
-
-        function goBack() {
-            window.location.href = 'index.html';
-        }
-    </script>
-                // Update avatar
-                const avatarImg = document.getElementById('avatar-img');
-                const avatarInitial = document.getElementById('avatar-initial');
-                
-                if (user.avatar) {
-                    avatarImg.src = `/uploads/${user.avatar}`;
-                    avatarImg.style.display = 'block';
-                    avatarInitial.style.display = 'none';
-                } else {
-                    avatarInitial.textContent = user.name.charAt(0).toUpperCase();
-                    avatarInitial.style.display = 'flex';
-                }
-                
-            </label>
-            <div id="upload-status" style="margin-top: 10px; color: #28a745; font-size: 14px;"></div>
-        </form>
-    </div>
-        
-        <a href="index.html" class="back-btn">Back to Home</a>
+            <a href="index.html" class="back-btn">Back to Home</a>
+        </div>
     </div>
 
     <script>
-    async function loadProfile() {
-        try {
-            const response = await fetch('/current-user');
-            if (!response.ok) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            const user = await response.json();
-            
-            // Update user info
-            document.getElementById('user-name').textContent = user.name;
-            document.getElementById('user-email').textContent = user.email;
-            document.getElementById('user-phone').textContent = user.phone;
-            document.getElementById('user-address').textContent = user.address;
-            
-            // Update avatar
-            const avatarImg = document.getElementById('avatar-img');
-            const avatarInitial = document.getElementById('avatar-initial');
-            
-            if (user.avatar) {
-                avatarImg.src = `/uploads/${user.avatar}`;
-                avatarImg.style.display = 'block';
-                avatarInitial.style.display = 'none';
-            } else {
-                avatarInitial.textContent = user.name.charAt(0).toUpperCase();
-                avatarInitial.style.display = 'flex';
-            }
-            
-        } catch (error) {
-            console.error('Error loading profile:', error);
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) {
             window.location.href = 'login.html';
+        } else {
+            const user = JSON.parse(currentUser);
+            document.getElementById('user-name').textContent = user.name || 'Not available';
+            document.getElementById('user-email').textContent = user.email || 'Not available';
+            document.getElementById('user-id').textContent = user.uid || 'Not available';
         }
-    }
-    
-    function uploadAvatar(event) {
-        const file = event.target.files[0];
-        if (file) {
-            document.getElementById('upload-status').textContent = 'Uploading...';
-            
-            const formData = new FormData();
-            formData.append('avatar', file);
-            
-            fetch('/upload-avatar', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    showMessage('Avatar updated successfully!', 'success');
-                    setTimeout(() => loadProfile(), 1000); // Reload profile after 1 second
-                } else {
-                    showMessage('Error uploading avatar', 'error');
-                }
-                document.getElementById('upload-status').textContent = '';
-            })
-            .catch(error => {
-                console.error('Upload error:', error);
-                showMessage('Upload failed', 'error');
-                document.getElementById('upload-status').textContent = '';
-            });
-        }
-    }
-    
-    function showMessage(message, type) {
-        const container = document.getElementById('message-container');
-        container.innerHTML = `<div class="message ${type}">${message}</div>`;
-        setTimeout(() => {
-            container.innerHTML = '';
-        }, 3000);
-    }
-    
-    // Load profile when page loads
-    loadProfile();
     </script>
 </body>
 </html>
