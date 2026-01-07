@@ -94,6 +94,10 @@
             border-bottom: 1px solid #eee;
         }
 
+        .item:last-child {
+            border-bottom: none;
+        }
+
         .item-name {
             flex: 1;
         }
@@ -146,6 +150,11 @@
         .refresh-btn:hover {
             background: #ff6b35;
         }
+
+        .delivered-checkbox {
+            margin-top: 15px;
+            text-align: right;
+        }
     </style>
 </head>
 
@@ -163,11 +172,14 @@
     </div>
 
     <script>
-        // Load and display orders from backend database
+        // Auto-refresh every 30 seconds (optional - remove if not needed)
+        setInterval(loadOrders, 30000);
+
+        // Initial load
+        loadOrders();
+
         function loadOrders() {
             const container = document.getElementById('orders-container');
-
-            // Show loading message
             container.innerHTML = `
                 <div class="no-orders">
                     <h3>Loading orders...</h3>
@@ -175,96 +187,95 @@
                 </div>
             `;
 
-            // Use local backend URL for local testing
             const backendUrl = 'http://10.23.240.23:3000';
-            console.log(`📡 Using local backend URL: ${backendUrl}`);
-            console.log('🔍 Starting to fetch orders...');
-
-            // Fetch orders from backend - use trailing slash
-            fetch(`${backendUrl}/orders/`)
+            console.log(`📡 Using backend URL: ${backendUrl}`);
+            
+            // Test backend connection first
+            fetch(`${backendUrl}/test`)
                 .then(response => {
-                    console.log('🔍 Response status:', response.status);
-                    console.log('🔍 Response headers:', response.headers);
-
+                    console.log('🧪 Backend test response status:', response.status);
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error(`Backend not reachable: ${response.status}`);
                     }
-
+                    return response.json();
+                })
+                .then(testData => {
+                    console.log('🧪 Backend is working:', testData);
+                    
+                    // Now fetch orders
+                    return fetch(`${backendUrl}/orders/`);
+                })
+                .then(response => {
+                    console.log('🔍 Orders response status:', response.status);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.json();
                 })
                 .then(orders => {
                     console.log('🔍 Orders received:', orders);
                     console.log('🔍 Orders length:', orders ? orders.length : 0);
-                    console.log('🔍 First order:', orders && orders[0] ? orders[0] : 'No orders');
-
+                    
                     if (!orders || orders.length === 0) {
                         container.innerHTML = `
                             <div class="no-orders">
                                 <h3>No orders received yet</h3>
                                 <p>Orders will appear here when customers place them.</p>
                                 <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
+                                <button class="refresh-btn" onclick="testBackendConnection()">🧪 Test Backend</button>
                             </div>
                         `;
                         return;
                     }
 
-                    // Display orders
-                    console.log('🔍 Starting to display orders...');
                     let html = '';
                     orders.forEach((order, index) => {
-                        console.log(`🔍 Processing order ${index}:`, order);
-
                         const orderDate = new Date(order.created_at || order.timestamp);
+                        const orderId = orders.length - index; // Simple sequential numbering
+
+                        let itemsHtml = '';
+                        try {
+                            const items = typeof order.order_items === "string" ? JSON.parse(order.order_items) : order.order_items;
+                            if (Array.isArray(items)) {
+                                items.forEach(item => {
+                                    itemsHtml += `
+                                        <div class="item">
+                                            <div class="item-name">${item.name} x ${item.quantity}</div>
+                                            <div class="item-price">₹${item.price * item.quantity}</div>
+                                        </div>
+                                    `;
+                                });
+                            } else {
+                                itemsHtml = `<div class="item"><div class="item-name">Invalid items data</div></div>`;
+                            }
+                        } catch (e) {
+                            itemsHtml = `<div class="item"><div class="item-name">Error loading items</div></div>`;
+                        }
+
                         html += `
                             <div class="order-card">
                                 <div class="order-header">
-                                    <div class="order-id">Order #${order.id || (orders.length - index)}</div>
+                                    <div class="order-id">Order #${orderId}</div>
                                     <div class="order-time">${orderDate.toLocaleString()}</div>
                                 </div>
                                 
                                 <div class="customer-info">
                                     <h3>👤 Customer Information</h3>
-                                    <p><strong>Name:</strong> ${order.customer_name}</p>
-                                    <p><strong>Phone:</strong> ${order.customer_phone}</p>
-                                    <p><strong>Address:</strong> ${order.customer_address}</p>
+                                    <p><strong>Name:</strong> ${order.customer_name || 'N/A'}</p>
+                                    <p><strong>Phone:</strong> ${order.customer_phone || 'N/A'}</p>
+                                    <p><strong>Address:</strong> ${order.customer_address || 'N/A'}</p>
                                 </div>
                                 
                                 <div class="order-items">
                                     <h4>🛒 Order Items</h4>
-                                    <div class="item">
-                                        <div class="item-name">${(() => {
-                                try {
-                                    console.log('🔍 Raw order.order_items:', order.order_items);
-                                    console.log('🔍 Type of order.order_items:', typeof order.order_items);
-                                    
-                                    const items = typeof order.order_items === "string" ? JSON.parse(order.order_items) : order.order_items;
-                                    console.log('🔍 Parsed items:', items);
-                                    console.log('🔍 Type of parsed items:', typeof items);
-                                    console.log('🔍 Is array?', Array.isArray(items));
-                                    
-                                    if (Array.isArray(items)) {
-                                        console.log('🔍 Mapping items:', items);
-                                        return items.map(item => `${item.name} - ₹${item.price} x ${item.quantity}`).join("<br>");
-                                    }
-                                    console.log('🔍 Items is not array, showing raw:', order.order_items);
-                                    return JSON.stringify(order.order_items);
-                                } catch (e) {
-                                    console.log('🔍 Error parsing items:', e);
-                                    return "Error loading items";
-                                }
-                            })()}</div>
-
-                                        <div class="item-price">₹${order.total}</div>
-                                    </div>
+                                    ${itemsHtml}
                                 </div>
                                 
                                 <div class="order-total">
-                                    Total: ₹${order.total}
+                                    Total: ₹${order.total || '0'}
                                 </div>
                                 
                                 <div class="delivered-checkbox">
                                     <label>
-                                        <input type="checkbox" id="delivered-${order.id}" onchange="markAsDelivered(${order.id})">
+                                        <input type="checkbox" onchange="markAsDelivered('${orderId}')">
                                         <span>✅ Mark as Delivered & Delete</span>
                                     </label>
                                 </div>
@@ -275,31 +286,89 @@
                     container.innerHTML = html + `
                         <div style="text-align: center; margin-top: 20px;">
                             <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
+                            <button class="refresh-btn" onclick="testBackendConnection()">🧪 Test Backend</button>
                         </div>
                     `;
-
-                    console.log('🔍 Orders displayed successfully');
                 })
                 .catch(error => {
-                    console.error('❌ Error fetching orders:', error);
+                    console.error('❌ Error:', error);
                     container.innerHTML = `
                         <div class="no-orders">
                             <h3>Error loading orders</h3>
                             <p>${error.message}</p>
                             <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
+                            <button class="refresh-btn" onclick="testBackendConnection()">🧪 Test Backend</button>
                         </div>
                     `;
                 });
         }
 
-        // Initial load and auto-refresh
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded, setting up admin panel');
-            loadOrders();
+        // Test backend connection
+        function testBackendConnection() {
+            const backendUrl = 'http://10.23.240.23:3000';
+            console.log('🧪 Testing backend connection...');
+            
+            fetch(`${backendUrl}/test`)
+                .then(response => {
+                    console.log('🧪 Backend test response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`Backend not reachable: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('🧪 Backend test response:', data);
+                    alert('✅ Backend connection is working!');
+                })
+                .catch(error => {
+                    console.error('❌ Backend connection test failed:', error);
+                    alert('❌ Backend connection failed: ' + error.message);
+                });
+        }
 
-            // Auto-refresh every 5 seconds
-            setInterval(loadOrders, 5000);
-        });
+        function markAsDelivered(orderId) {
+            console.log('🔍 Delete function called with orderId:', orderId);
+            console.log('🔍 Order ID type:', typeof orderId);
+            console.log('🔍 Order ID length:', orderId ? orderId.length : 'undefined');
+
+            if (!confirm('Are you sure this order has been delivered? It will be permanently deleted.')) {
+                event.target.checked = false;
+                return;
+            }
+
+            const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:3000'
+                : window.location.origin;
+            const deleteUrl = `${apiUrl}/orders/${orderId}`;
+
+            console.log('🔍 Full delete URL:', deleteUrl);
+            console.log('🔍 Sending DELETE request...');
+
+            fetch(deleteUrl, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    console.log('🔍 Delete response status:', response.status);
+                    console.log('🔍 Delete response headers:', response.headers);
+
+                    if (!response.ok) {
+                        console.log('🔍 Response not OK, throwing error...');
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('🔍 Delete response data:', data);
+                    alert(`✅ Order #${orderId} marked as delivered and deleted successfully!`);
+                    loadOrders();
+                })
+                .catch(error => {
+                    console.error('❌ Error deleting order:', error);
+                    console.error('❌ Error details:', error.message);
+                    alert('❌ Failed to delete order: ' + error.message);
+                    event.target.checked = false;
+                });
+        }
     </script>
 </body>
 

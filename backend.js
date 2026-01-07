@@ -116,22 +116,65 @@ function startServer() {
         }
     });
 
+    // Test endpoint to verify backend is working
+    app.get('/test', (req, res) => {
+        console.log('🧪 Test endpoint called');
+        res.json({ 
+            message: 'Backend is working!',
+            timestamp: new Date().toISOString()
+        });
+    });
+
     // Delete single order endpoint
     app.delete('/orders/:id', async (req, res) => {
         try {
             const orderId = req.params.id;
             
-            if (!orderId || isNaN(orderId)) {
+            console.log(`🔍 DELETE request received for order ID: ${orderId}`);
+            console.log(`🔍 Order ID type: ${typeof orderId}`);
+            console.log(`🔍 Order ID length: ${orderId ? orderId.length : 'undefined'}`);
+            
+            if (!orderId) {
+                console.log(`❌ Invalid order ID: ${orderId}`);
                 return res.status(400).json({ error: 'Invalid order ID' });
             }
             
-            const result = await Order.findByIdAndDelete(orderId);
+            // Check if Order model is available
+            console.log(`🔍 Order model available: ${!!Order}`);
             
-            if (!result) {
+            // Try to find the order first to see if it exists
+            let deleteQuery;
+            try {
+                const ObjectId = require('mongoose').Types.ObjectId;
+                deleteQuery = { _id: new ObjectId(orderId) };
+                console.log(`🔍 Using ObjectId query:`, deleteQuery);
+            } catch (e) {
+                console.log(`🔍 ObjectId conversion failed, using string ID: ${orderId}`);
+                console.log(`🔍 ObjectId conversion error:`, e.message);
+                deleteQuery = { _id: orderId };
+            }
+            
+            console.log(`🔍 Final delete query:`, deleteQuery);
+            
+            // Try to find the order first
+            const existingOrder = await Order.findOne(deleteQuery);
+            console.log(`🔍 Existing order found:`, existingOrder);
+            
+            if (!existingOrder) {
+                console.log(`❌ Order not found with ID: ${orderId}`);
                 return res.status(404).json({ error: 'Order not found' });
             }
             
-            console.log(`✅ Order ${orderId} deleted (delivered)`);
+            // Delete the order
+            const result = await Order.findOneAndDelete(deleteQuery);
+            console.log(`🔍 Delete result:`, result);
+            
+            if (!result) {
+                console.log(`❌ Delete failed for order ID: ${orderId}`);
+                return res.status(404).json({ error: 'Order not found' });
+            }
+            
+            console.log(`✅ Order ${orderId} deleted successfully`);
             res.json({ 
                 success: true, 
                 message: 'Order deleted successfully',
@@ -139,7 +182,8 @@ function startServer() {
             });
         } catch (err) {
             console.error('❌ Error deleting order:', err);
-            return res.status(500).json({ error: 'Database error' });
+            console.error('❌ Error stack:', err.stack);
+            return res.status(500).json({ error: 'Database error: ' + err.message });
         }
     });
 

@@ -1,5 +1,6 @@
 node_modules/
-.env
+*.class
+*.db
+*.jar
 uploads/
 serviceAccountKey.json
-node_modules/
