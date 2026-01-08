@@ -24,12 +24,13 @@ body{
 }
 .right{
   display: flex;
-  position: absolute;
+  position: relative;
   color: whitesmoke;
-  margin-left: 900px;
+  margin-left: auto;
   overflow: visible;
   gap: 0px;
   padding-bottom: 10px;
+  padding-right: 30px;
 }
 .right button{
   background: transparent;
@@ -38,9 +39,16 @@ body{
   text-decoration: none;
   font-family: 'Poppins', sans-serif;
 }
+
+#user-section {
+  display: none;
+}
+
 .user-dropdown {
   position: relative;
   z-index: 9999;
+  display: flex;
+  align-items: center;
 }
 
 .user-icon {
@@ -48,6 +56,11 @@ body{
   border: none;
   color: whitesmoke;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   padding: 8px;
   border-radius: 50%;
   transition: background-color 0.3s;
@@ -91,18 +104,22 @@ body{
   display: flex;
   align-items: center;
   padding-top: 20px;
-  padding-left: 170px;
+  padding-left: 90px;
+  padding-right: 20px;
   color: white;
   font-size: 13px;
   font-family: "Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   width: 100%;
+  box-sizing: border-box;
   position: relative;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 .nav a{
   text-decoration: none;
   color: white;
   font-family: 'Poppins', sans-serif;
-   padding-left: 40px;
+   padding-left: 24px;
    padding-bottom: 10px;
 }
 .nav a:hover {
@@ -112,8 +129,8 @@ body{
 }
 .logo{
   height: 40px;
-  margin-left: -140;
   position: absolute;
+  left: 20px;
   padding-bottom: 15px;
 }
 .grey {
@@ -418,4 +435,175 @@ hr{
   width:300px;
   border-radius: 30px;
   border: 2px solid orangered;
+}
+
+@media (max-width: 992px) {
+  .nav {
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .right {
+    position: relative;
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .right-img {
+    padding-right: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .right-img {
+    position: relative;
+    width: 100%;
+    height: auto;
+    max-height: 320px;
+    object-fit: cover;
+    padding-right: 0;
+  }
+
+  .logo {
+    position: relative;
+    margin-left: 0;
+  }
+
+  .nav a {
+    padding-left: 16px;
+    padding-bottom: 0;
+  }
+
+  .write h3 {
+    position: relative;
+    right: auto;
+    top: auto;
+    font-size: 32px;
+    padding: 20px;
+    text-align: left;
+  }
+
+  .grey {
+    max-width: 100%;
+    margin-left: 0;
+    height: auto;
+    padding: 20px;
+  }
+
+  .title {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    font-size: 52px;
+    margin: 0;
+  }
+
+  .grey img {
+    position: relative;
+    top: auto;
+    right: auto;
+    height: 200px;
+    width: 200px;
+    margin-top: 10px;
+  }
+
+  .search {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: 320px;
+    padding: 20px;
+  }
+
+  .searchbox {
+    width: 100%;
+  }
+
+  .quote {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    padding: 20px;
+    font-size: 16px;
+  }
+
+  hr {
+    position: relative;
+    width: 100%;
+    left: auto;
+    top: auto;
+  }
+
+  .form {
+    width: 92%;
+    max-width: 420px;
+    margin: 40px auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .imgs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .img-1, .img-2, .img-3 {
+    position: relative;
+    margin: 0 auto;
+    width: 92%;
+    max-width: 380px;
+    height: auto;
+  }
+
+  .img-1 img, .img-2 img, .img-3 img {
+    width: 100%;
+    height: auto;
+    max-width: 220px;
+    padding-left: 0;
+  }
+
+  .img-1 p, .img-2 p, .img-3 p {
+    padding-left: 0;
+    text-align: center;
+  }
+
+  .imagec img {
+    width: 92%;
+    height: auto;
+    margin-left: 0;
+    max-width: 520px;
+  }
+
+  .content {
+    width: 92%;
+    margin-left: 0;
+    margin-top: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav a {
+    padding-left: 10px;
+    font-size: 12px;
+  }
+  .write h3 {
+    font-size: 26px;
+  }
+  .title {
+    font-size: 40px;
+  }
 }
