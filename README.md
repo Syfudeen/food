@@ -1,439 +1,117 @@
-// progress 10782
-// progress 1594
-// progress 9784
-// progress 31445
-// progress 23520
-// progress 16048
-// progress 2204
-// progress 11608
-// progress 19144
-// progress 7979
-// progress 32490
-// progress 17168
-// progress 30328
-// progress 22380
-// progress 30823
-// progress 23260
-// progress 11724
-// progress 28192
-// progress 2321
-// progress 6388
-// progress 7479
-// progress 27300
-// progress 2716
-// progress 25731
-// progress 25118
-// progress 22881
-// progress 17192
-// progress 21146
-// progress 27565
-// progress 23208
-// progress 24252
-// progress 14888
-// progress 23150
-// progress 31904
-// progress 21251
-// progress 19743
-// progress 5625
-// progress 22569
-// progress 29824
-// progress 18439
-// progress 21978
-// progress 9167
-// progress 2313
-// progress 26224
-// progress 12265
-// progress 6756
-// progress 10774
-// progress 20185
-// progress 22736
-// progress 7912
-// progress 18620
-// progress 26681
-// progress 6138
-// progress 66
-// progress 31650
-// progress 4569
-// progress 13661
-// progress 28177
-// progress 31918
-// progress 6431
-// progress 32553
-// progress 23410
-// progress 28130
-// progress 13898
-// progress 30668
-// progress 32464
-// progress 25025
-// progress 5901
-// progress 13575
-// progress 24115
-// progress 32154
-// progress 1115
-// progress 4287
-// progress 27150
-// progress 9134
-// progress 11145
-// progress 87
-// progress 32340
-// progress 27001
-// progress 15292
-// progress 27553
-// progress 6082
-// progress 24128
-// progress 32543
-// progress 6852
-// progress 23520
-// progress 23126
-// progress 14838
-// progress 11671
-// progress 13480
-// progress 22846
-// progress 24549
-// progress 11430
-// progress 31020
-// progress 25375
-// progress 27314
-// progress 25608
-// progress 21121
-// progress 9646
-// progress 24372
-// progress 6651
-// progress 18995
-// progress 5617
-// progress 25056
-// progress 20442
-// progress 28033
-// progress 14276
-// progress 4292
-// progress 27654
-// progress 18779
-// progress 4200
-// progress 32623
-// progress 7298
-// progress 11650
-// progress 5094
-// progress 13982
-// progress 5842
-// progress 10054
-// progress 7082
-// progress 19549
-// progress 19313
-// progress 11778
-// progress 6843
-// progress 13386
-// progress 16647
-// progress 27013
-// progress 7450
-// progress 25633
-// progress 32373
-// progress 8156
-// progress 28455
-// progress 1990
-// progress 17330
-// progress 6826
-// progress 31331
-// progress 10298
-// progress 19058
-// progress 10684
-// progress 10001
-// progress 11197
-// progress 10218
-// progress 30424
-// progress 2512
-// progress 1162
-// progress 16881
-// progress 19232
-// progress 4586
-// progress 17469
-// progress 15558
-// progress 5211
-// progress 14693
-// progress 820
-// progress 1599
-// progress 18160
-// progress 4410
-// progress 9537
-// progress 13275
-// progress 18448
-// progress 7187
-// progress 23203
-// progress 13068
-// progress 30280
-// progress 18922
-// progress 23132
-// progress 31396
-// progress 19170
-// progress 7068
-// progress 5276
-// progress 8866
-// progress 28412
-// progress 10514
-// progress 2619
-// progress 21665
-// progress 7621
-// progress 19774
-// progress 13998
-// progress 9796
-// progress 3767
-// progress 1049
-// progress 5626
-// progress 11456
-// progress 26092
-// progress 28097
-// progress 2014
-// progress 28579
-// progress 5966
-// progress 8928
-// progress 22453
-// progress 17186
-// progress 19334
-// progress 311
-// progress 976
-// progress 10537
-// progress 24563
-// progress 20793
-// progress 30954
-// progress 17229
-// progress 4108
-// progress 29235
-// progress 22716
-// progress 13756
-// progress 30340
-// progress 7249
-// progress 8553
-// progress 23985
-// progress 10422
-// progress 25734
-// progress 32471
-// progress 1733
-// progress 29011
-// progress 16899
-// progress 27287
-// progress 30463
-// progress 1944
-// progress 6884
-// progress 29902
-// progress 22266
-// progress 4131
-// progress 28427
-// progress 23197
-// progress 7085
-// progress 13953
-// progress 9343
-// progress 14452
-// progress 5362
-// progress 30424
-// progress 27626
-// progress 17017
-// progress 20640
-// progress 10531
-// progress 29746
-// progress 17780
-// progress 14057
-// progress 4896
-// progress 27120
-// progress 17934
-// progress 30568
-// progress 5393
-// progress 27060
-// progress 12954
-// progress 25632
-// progress 18734
-// progress 32323
-// progress 15288
-// progress 19072
-// progress 975
-// progress 10514
-// progress 4590
-// progress 19537
-// progress 32300
-// progress 7985
-// progress 19422
-// progress 16400
-// progress 28293
-// progress 27143
-// progress 29227
-// progress 18043
-// progress 6903
-// progress 19612
-// progress 21682
-// progress 29759
-// progress 28291
-// progress 3991
-// progress 17422
-// progress 1267
-// progress 25992
-// progress 30491
-// progress 21590
-// progress 8235
-// progress 12482
-// progress 5688
-// progress 1442
-// progress 24846
-// progress 27546
-// progress 26764
-// progress 8905
-// progress 12683
-// progress 29889
-// progress 18925
-// progress 18873
-// progress 5066
-// progress 349
-// progress 30870
-// progress 17661
-// progress 20102
-// progress 31719
-// progress 19711
-// progress 18265
-// progress 817
-// progress 9712
-// progress 25060
-// progress 26351
-// progress 26500
-// progress 12161
-// progress 2033
-// progress 21272
-// progress 18357
-// progress 19190
-// progress 7263
-// progress 31751
-// progress 19079
-// progress 16761
-// progress 22691
-// progress 24583
-// progress 15956
-// progress 9164
-// progress 8570
-// progress 2759
-// progress 3719
-// progress 15078
-// progress 22119
-// progress 19402
-// progress 26294
-// progress 29078
-// progress 7165
-// progress 25455
-// progress 24489
-// progress 16987
-// progress 9419
-// progress 32085
-// progress 9258
-// progress 16242
-// progress 2965
-// progress 9336
-// progress 14524
-// progress 18082
-// progress 13582
-// progress 20151
-// progress 2331
-// progress 26603
-// progress 10797
-// progress 17265
-// progress 1700
-// progress 24126
-// progress 18741
-// progress 225
-// progress 9147
-// progress 1290
-// progress 12141
-// progress 8454
-// progress 15862
-// progress 13076
-// progress 7022
-// progress 19492
-// progress 19057
-// progress 20055
-// progress 3097
-// progress 17966
-// progress 8550
-// progress 6135
-// progress 29435
-// progress 27365
-// progress 27765
-// progress 9028
-// progress 11189
-// progress 17174
-// progress 22656
-// progress 21940
-// progress 1450
-// progress 6101
-// progress 20175
-// progress 18454
-// progress 12007
-// progress 29141
-// progress 27950
-// progress 24188
-// progress 5901
-// progress 17752
-// progress 11017
-// progress 18913
-// progress 13623
-// progress 29038
-// progress 24699
-// progress 21713
-// progress 18893
-// progress 18181
-// progress 21241
-// progress 10026
-// progress 2841
-// progress 23435
-// progress 7246
-// progress 5995
-// progress 11320
-// progress 30215
-// progress 10206
-// progress 24708
-// progress 22803
-// progress 15903
-// progress 24511
-// progress 2935
-// progress 15876
-// progress 21004
-// progress 13586
-// progress 2939
-// progress 20161
-// progress 23385
-// progress 20861
-// progress 7710
-// progress 31971
-// progress 21809
-// progress 22739
-// progress 24201
-// progress 1199
-// progress 3996
-// progress 4978
-// progress 21018
-// progress 22712
-// progress 15748
-// progress 7191
-// progress 18748
-// progress 24108
-// progress 16158
-// progress 27449
-// progress 15099
-// progress 8378
-// progress 5628
-// progress 13365
-// progress 17372
-// progress 29712
-// progress 8553
-// progress 5559
-// progress 16121
-// progress 29569
-// progress 31416
-// progress 12908
-// progress 29642
-// progress 7765
-// progress 13015
-// progress 10653
-// progress 7700
-// progress 11046
-// progress 15700
-// progress 24401
-// progress 19805
-// progress 26304
-// progress 4141
-// progress 2177
-// progress 22848
-// progress 20810
+Restaurant Management Web Application
+
+This is a full-stack Restaurant Management Web Application designed to handle user authentication, menu display, cart functionality, and order management. The project is built using simple and clean technologies and is suitable for learning as well as deployment.
+
+📌 Features
+
+User Signup, Login, and Password Reset
+
+Secure authentication flow
+
+Menu display with Add to Cart functionality
+
+Cart item count using Local Storage
+
+Order management logic
+
+Clean UI using HTML, CSS, and JavaScript
+
+Backend using Node.js
+
+🛠️ Technologies Used
+Frontend
+
+HTML
+
+CSS
+
+JavaScript
+
+Backend
+
+Node.js
+
+Express.js
+
+Database
+
+MongoDB / JSON based storage (depending on setup)
+
+📂 Project Structure
+restaurant/
+│
+├── backend.js
+├── signup.html
+├── login.html
+├── reset-password.html
+├── style.css
+├── index.html
+├── package.json
+├── README.md
+└── .gitignore
+
+
+❌ node_modules is intentionally excluded from GitHub.
+
+🚀 How to Run the Project Locally
+
+Clone the repository
+
+git clone https://github.com/Kaviya2408/hotel.git
+
+
+Go to project folder
+
+cd restaurant
+
+
+Install dependencies
+
+npm install
+
+
+Start the backend server
+
+node backend.js
+
+
+Open index.html in your browser
+
+📄 .gitignore (Important)
+
+Make sure your .gitignore contains:
+
+node_modules/
+.env
+*.log
+*.db
+*.class
+uploads/
+
+
+This keeps the repository clean.
+
+✅ Current Status
+
+Authentication working
+
+Cart functionality fixed and working
+
+Repository cleaned and organized
+
+Ready for further enhancements
+
+🔮 Future Improvements
+
+Admin dashboard
+
+Online payment integration
+
+Order history
+
+Responsive mobile UI
+
+👩‍💻 Author
+
+Kaviya
+GitHub: https://github.com/Kaviya2408
