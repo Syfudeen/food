@@ -37,6 +37,7 @@ Database
 
 MongoDB / JSON based storage (depending on setup)
 
+HomePage Preview
 ![Homepage Preview](Screenshot%202026-01-19%20112507.png)
 
 
@@ -54,8 +55,6 @@ restaurant/
 ├── README.md
 └── .gitignore
 
-
-❌ node_modules is intentionally excluded from GitHub.
 
 🚀 How to Run the Project Locally
 
