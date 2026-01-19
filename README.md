@@ -18,47 +18,34 @@ Clean UI using HTML, CSS, and JavaScript
 
 Backend using Node.js
 
-🛠️ Technologies Used
-Frontend
-
-HTML
-
-CSS
-
-JavaScript
-
-Backend
-
-Node.js
-
-Express.js
-
-Database
-
-MongoDB / JSON based storage (depending on setup)
+Technologies Used:
+  
+  Frontend
+  
+  HTML
+  
+  CSS
+  
+  JavaScript
+  
+  Backend
+  
+  Node.js
+  
+  Express.js
+  
+  Database
+  
+  MongoDB / JSON based storage (depending on setup)
 
 HomePage Preview
+
+
 ![Homepage Preview](Screenshot%202026-01-19%20112507.png)
 
+How to Run the Project Locally
 
-
-📂 Project Structure
-restaurant/
-│
-├── backend.js
-├── signup.html
-├── login.html
-├── reset-password.html
-├── style.css
-├── index.html
-├── package.json
-├── README.md
-└── .gitignore
-
-
-🚀 How to Run the Project Locally
-
-Clone the repository
+Clone the repository:
 
 git clone https://github.com/Kaviya2408/hotel.git
 
@@ -104,7 +91,7 @@ Repository cleaned and organized
 
 Ready for further enhancements
 
-🔮 Future Improvements
+Future Improvements
 
 Admin dashboard
 
@@ -114,7 +101,7 @@ Order history
 
 Responsive mobile UI
 
-👩‍💻 Author
+Author
 
 Kaviya
 GitHub: https://github.com/Kaviya2408
