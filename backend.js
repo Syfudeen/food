@@ -3,6 +3,8 @@ console.log('Starting server...');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
+const dbConfig = require('./database-config');
 
 const app = express();
 
@@ -16,7 +18,7 @@ app.use(cors({
 app.use(express.json());
 
 // Serve static files (HTML, CSS, JS, images)
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB connection with cloud/local config
 const dbConfig = require('./database-config');
@@ -37,16 +39,12 @@ const orderSchema = new mongoose.Schema({
 const Order = mongoose.model('Order', orderSchema);
 
 function startServer() {
-    // Root route for API health check
+    // Root route - serve frontend
     app.get('/', (req, res) => {
-        res.json({ 
-            message: 'Restaurant API is running',
-            timestamp: new Date().toISOString(),
-            endpoints: ['/test', '/health', '/orders', '/send-order']
-        });
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
     });
 
-    app.post('/send-order', async (req, res) => {
+    app.post('/api/send-order', async (req, res) => {
         try {
             const { customerName, customerPhone, customerAddress, orderItems, subtotal, deliveryFee, total } = req.body;
             
@@ -80,7 +78,7 @@ function startServer() {
     });
 
     // Get all orders endpoint - handle both /orders and /orders/
-    app.get('/orders', async (req, res) => {
+    app.get('/api/orders', async (req, res) => {
         try {
             const orders = await Order.find().sort({ created_at: -1 });
             console.log(`📊 Admin panel: ${orders.length} orders found`);
@@ -91,7 +89,7 @@ function startServer() {
         }
     });
 
-    app.get('/orders/', async (req, res) => {
+    app.get('/api/orders/', async (req, res) => {
         try {
             const orders = await Order.find().sort({ created_at: -1 });
             console.log(`📊 Admin panel: ${orders.length} orders found`);
@@ -103,7 +101,7 @@ function startServer() {
     });
 
     // Clear all orders endpoint
-    app.delete('/clear-orders', async (req, res) => {
+    app.delete('/api/clear-orders', async (req, res) => {
         try {
             const result = await Order.deleteMany({});
             console.log(`✅ Cleared ${result.deletedCount} orders`);
@@ -119,7 +117,7 @@ function startServer() {
     });
 
     // Test endpoint to verify backend is working
-    app.get('/test', (req, res) => {
+    app.get('/api/test', (req, res) => {
         console.log('🧪 Test endpoint called');
         res.json({ 
             message: 'Backend is working!',
@@ -128,7 +126,7 @@ function startServer() {
     });
 
     // Health check endpoint for Vercel
-    app.get('/health', (req, res) => {
+    app.get('/api/health', (req, res) => {
         res.status(200).json({ 
             status: 'healthy',
             timestamp: new Date().toISOString(),
@@ -137,7 +135,7 @@ function startServer() {
     });
 
     // Debug endpoint to check database connection
-    app.get('/debug-db', async (req, res) => {
+    app.get('/api/debug-db', async (req, res) => {
         try {
             console.log('🔍 Debug: Checking database connection...');
             const count = await Order.countDocuments();
@@ -158,7 +156,7 @@ function startServer() {
 
     
     // Delete single order endpoint
-    app.delete('/orders/:id', async (req, res) => {
+    app.delete('/api/orders/:id', async (req, res) => {
         try {
             const orderId = req.params.id;
             
