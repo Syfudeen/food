@@ -21,7 +21,6 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB connection with cloud/local config
-const dbConfig = require('./database-config');
 
 // Order schema for MongoDB
 const orderSchema = new mongoose.Schema({
