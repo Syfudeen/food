@@ -190,7 +190,7 @@
                 </div>
             `;
 
-            fetch(`${backendUrl}/api/orders/`)
+            fetch(`${backendUrl}/api/orders`)
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.json();
