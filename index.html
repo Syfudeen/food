@@ -1,0 +1,142 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+     </head>
+        <body>
+        <div class="container">
+            <img src="./ind.jpg" class="right-img">
+            <div class="nav">
+                <img src="./logo.png" class="logo">
+                <a href="public/chef.html">Chef</a>
+                <a href="public/contact.html">Contact</a>
+                <a href="public/about.html">About us</a>
+                 <a href="public/menu.html">Menu</a>
+                <div class="right">
+                    <div id="auth-section">
+                        <button id="login-btn"><a href="public/login.html">Login</a></button>
+                        <button id="signup-btn"><a href="public/signup.html">signup</a></button>
+                    </div>
+                    <div id="user-section">
+                        <div class="user-dropdown">
+                            <div class="user-icon" onclick="toggleDropdown()">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <div id="dropdown-menu" class="dropdown-menu">
+                                <a href="public/profile.html">Profile</a>
+                                <a href="#" onclick="logout()">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="write">
+                <h3>It's Not Just Food,<br>It's Experience</h3>
+                <div class="grey">
+                    <h2 class="title">Tasty Foods</h2>
+                    <img src="./food.png">
+                </div>
+                <div class="search">
+                    <input type="text" placeholder="search" class="searchbox">
+                     <button type="submit">SEARCH</button>
+                </div>
+            </div> 
+            <div class="quote">
+                    <div class="line"></div>
+                    <h5 class="words">Some Top Restaurant Food For<br>Dining In Or Take Away</h5>
+                </div>     
+        </div>
+        </body>
+        <script>
+        async function checkAuth() {
+            try {
+                // Check Firebase user session in localStorage
+                const currentUser = localStorage.getItem('currentUser');
+                console.log('checkAuth: currentUser =', currentUser);
+                
+                if (currentUser) {
+                    const user = JSON.parse(currentUser);
+                    console.log('User found in localStorage:', user);
+                    const authSection = document.getElementById('auth-section');
+                    const userSection = document.getElementById('user-section');
+                    console.log('Elements:', authSection, userSection);
+                    if (authSection) authSection.style.display = 'none';
+                    if (userSection) {
+                        userSection.style.display = 'flex';
+                        console.log('Set user-section display to flex');
+                    }
+                    
+                    // Update user name if needed
+                    const userNameElement = document.getElementById('user-name');
+                    if (userNameElement) {
+                        userNameElement.textContent = user.name;
+                    }
+                    
+                    // Add Admin link only for admin
+                    const dropdownMenu = document.getElementById('dropdown-menu');
+                    if (dropdownMenu) {
+                        if (user.email === 'kit27.csbs29@gmail.com') {
+                            dropdownMenu.innerHTML = `
+                                <a href="public/admin.html">Admin</a>
+                                <a href="public/profile.html">Profile</a>
+                                <a href="#" onclick="logout()">Logout</a>
+                            `;
+                        } else {
+                            dropdownMenu.innerHTML = `
+                                <a href="public/profile.html">Profile</a>
+                                <a href="#" onclick="logout()">Logout</a>
+                            `;
+                        }
+                    }
+                } else {
+                    console.log('No user found in localStorage');
+                    const authSection = document.getElementById('auth-section');
+                    const userSection = document.getElementById('user-section');
+                    if (authSection) authSection.style.display = 'block';
+                    if (userSection) userSection.style.display = 'none';
+                }
+            } catch (error) {
+                console.log('Auth check failed, showing login buttons', error);
+                const authSection = document.getElementById('auth-section');
+                const userSection = document.getElementById('user-section');
+                if (authSection) authSection.style.display = 'block';
+                if (userSection) userSection.style.display = 'none';
+            }
+        }
+        
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdown-menu');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        function logout() {
+            // Clear Firebase user session
+            localStorage.removeItem('currentUser');
+            document.getElementById('auth-section').style.display = 'block';
+            document.getElementById('user-section').style.display = 'none';
+            window.location.href = 'index.html';
+        }
+        
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('dropdown-menu');
+            const userIcon = document.querySelector('.user-icon');
+            
+            if (!userIcon || !dropdown) {
+                return;
+            }
+
+            if (!userIcon.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        checkAuth();
+        </script>
+</html>
