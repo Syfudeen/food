@@ -1,17 +1,11 @@
-import express from "express";
 import mongoose from "mongoose";
-import cors from "cors";
 
-const app = express();
-
-// Enable CORS for all origins
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-app.use(express.json());
+const app = {
+  use: () => {},
+  get: () => {},
+  post: () => {},
+  delete: () => {}
+};
 
 // Order schema for MongoDB
 const orderSchema = new mongoose.Schema({
@@ -26,7 +20,7 @@ const orderSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 });
 
-const Order = mongoose.model('Order', orderSchema);
+const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
 
 // MongoDB connection
 let isConnected = false;
@@ -52,125 +46,127 @@ const connectDB = async () => {
     }
 };
 
-// Health check endpoint
-app.get('/api/health', async (req, res) => {
+export default async function handler(req, res) {
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
     await connectDB();
-    res.status(200).json({ 
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        env: process.env.NODE_ENV || 'development'
-    });
-});
 
-// Test endpoint
-app.get('/api/test', async (req, res) => {
-    await connectDB();
-    res.json({ 
-        message: 'API is working!',
-        timestamp: new Date().toISOString()
-    });
-});
+    const { url, method } = req;
 
-// Get all orders endpoint
-app.get('/api/orders', async (req, res) => {
     try {
-        await connectDB();
-        const orders = await Order.find().sort({ created_at: -1 });
-        console.log(`📊 Admin panel: ${orders.length} orders found`);
-        res.json(orders);
-    } catch (err) {
-        console.error('❌ Error fetching orders:', err);
-        return res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// Send order endpoint
-app.post('/api/send-order', async (req, res) => {
-    try {
-        await connectDB();
-        const { customerName, customerPhone, customerAddress, orderItems, subtotal, deliveryFee, total } = req.body;
-        
-        if (!customerName || !customerPhone || !customerAddress || !orderItems) {
-            return res.status(400).json({ error: 'Missing required fields' });
-        }
-        
-        const order = new Order({
-            customer_name: customerName,
-            customer_phone: customerPhone,
-            customer_address: customerAddress,
-            order_items: orderItems,
-            subtotal: subtotal,
-            delivery_fee: deliveryFee,
-            total: total,
-            status: 'pending'
-        });
-        
-        const savedOrder = await order.save();
-        console.log(`✅ Order saved: ${customerName} - ${customerPhone} - ₹${total}`);
-        
-        res.json({ 
-            success: true, 
-            message: 'Order received successfully!',
-            orderId: savedOrder._id
-        });
-    } catch (err) {
-        console.error('❌ Database error:', err);
-        return res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// Clear all orders endpoint
-app.delete('/api/clear-orders', async (req, res) => {
-    try {
-        await connectDB();
-        const result = await Order.deleteMany({});
-        console.log(`✅ Cleared ${result.deletedCount} orders`);
-        res.json({ 
-            success: true, 
-            message: `Cleared ${result.deletedCount} orders`,
-            clearedCount: result.deletedCount
-        });
-    } catch (err) {
-        console.error('❌ Error clearing orders:', err);
-        return res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// Delete single order endpoint
-app.delete('/api/orders/:id', async (req, res) => {
-    try {
-        await connectDB();
-        const orderId = req.params.id;
-        
-        console.log(`🔍 DELETE request received for order ID: ${orderId}`);
-
-        if (!orderId) {
-            return res.status(400).json({ error: 'Invalid order ID' });
+        // Health check endpoint
+        if (url === '/api/health' && method === 'GET') {
+            res.status(200).json({ 
+                status: 'healthy',
+                timestamp: new Date().toISOString(),
+                env: process.env.NODE_ENV || 'development'
+            });
+            return;
         }
 
-        if (!mongoose.Types.ObjectId.isValid(orderId)) {
-            return res.status(400).json({ error: 'Invalid order ID format' });
+        // Test endpoint
+        if (url === '/api/test' && method === 'GET') {
+            res.json({ 
+                message: 'API is working!',
+                timestamp: new Date().toISOString()
+            });
+            return;
         }
 
-        const result = await Order.findByIdAndDelete(orderId);
-        if (!result) {
-            return res.status(404).json({ error: 'Order not found' });
+        // Get all orders endpoint
+        if (url === '/api/orders' && method === 'GET') {
+            const orders = await Order.find().sort({ created_at: -1 });
+            console.log(`📊 Admin panel: ${orders.length} orders found`);
+            res.json(orders);
+            return;
         }
-        
-        console.log(`✅ Order ${orderId} deleted successfully`);
-        res.json({ 
-            success: true, 
-            message: 'Order deleted successfully',
-            deletedOrderId: orderId
-        });
+
+        // Send order endpoint
+        if (url === '/api/send-order' && method === 'POST') {
+            const { customerName, customerPhone, customerAddress, orderItems, subtotal, deliveryFee, total } = req.body;
+            
+            if (!customerName || !customerPhone || !customerAddress || !orderItems) {
+                return res.status(400).json({ error: 'Missing required fields' });
+            }
+            
+            const order = new Order({
+                customer_name: customerName,
+                customer_phone: customerPhone,
+                customer_address: customerAddress,
+                order_items: orderItems,
+                subtotal: subtotal,
+                delivery_fee: deliveryFee,
+                total: total,
+                status: 'pending'
+            });
+            
+            const savedOrder = await order.save();
+            console.log(`✅ Order saved: ${customerName} - ${customerPhone} - ₹${total}`);
+            
+            res.json({ 
+                success: true, 
+                message: 'Order received successfully!',
+                orderId: savedOrder._id
+            });
+            return;
+        }
+
+        // Clear all orders endpoint
+        if (url === '/api/clear-orders' && method === 'DELETE') {
+            const result = await Order.deleteMany({});
+            console.log(`✅ Cleared ${result.deletedCount} orders`);
+            res.json({ 
+                success: true, 
+                message: `Cleared ${result.deletedCount} orders`,
+                clearedCount: result.deletedCount
+            });
+            return;
+        }
+
+        // Delete single order endpoint
+        if (url.startsWith('/api/orders/') && method === 'DELETE') {
+            const orderId = url.split('/api/orders/')[1];
+            
+            console.log(`🔍 DELETE request received for order ID: ${orderId}`);
+
+            if (!orderId) {
+                return res.status(400).json({ error: 'Invalid order ID' });
+            }
+
+            if (!mongoose.Types.ObjectId.isValid(orderId)) {
+                return res.status(400).json({ error: 'Invalid order ID format' });
+            }
+
+            const result = await Order.findByIdAndDelete(orderId);
+            if (!result) {
+                return res.status(404).json({ error: 'Order not found' });
+            }
+            
+            console.log(`✅ Order ${orderId} deleted successfully`);
+            res.json({ 
+                success: true, 
+                message: 'Order deleted successfully',
+                deletedOrderId: orderId
+            });
+            return;
+        }
+
+        // If no route matches
+        res.status(404).json({ error: 'API endpoint not found' });
+
     } catch (err) {
-        console.error('❌ Error deleting order:', err);
-        console.error('❌ Error stack:', err.stack);
-        return res.status(500).json({ error: 'Database error: ' + err.message });
+        console.error('❌ API Error:', err);
+        res.status(500).json({ error: 'Database error: ' + err.message });
     }
-});
-
-export default app;
+}
 
 // For Vercel serverless functions
-export { app as default };
+export { handler as default };
