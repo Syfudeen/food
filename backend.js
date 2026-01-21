@@ -89,17 +89,6 @@ function startServer() {
         }
     });
 
-    app.get('/api/orders/', async (req, res) => {
-        try {
-            const orders = await Order.find().sort({ created_at: -1 });
-            console.log(`📊 Admin panel: ${orders.length} orders found`);
-            res.json(orders);
-        } catch (err) {
-            console.error('❌ Error fetching orders:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
-    });
-
     // Clear all orders endpoint
     app.delete('/api/clear-orders', async (req, res) => {
         try {
@@ -130,7 +119,8 @@ function startServer() {
         res.status(200).json({ 
             status: 'healthy',
             timestamp: new Date().toISOString(),
-            env: process.env.NODE_ENV || 'development'
+            env: process.env.NODE_ENV || 'development',
+            message: 'Server is running and healthy'
         });
     });
 
