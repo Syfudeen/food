@@ -1,7 +1,6 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const dbConfig = require('../database-config');
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
 
 const app = express();
 
@@ -38,7 +37,7 @@ const connectDB = async () => {
     }
     
     try {
-        const uri = `mongodb+srv://${process.env.DB_USER || dbConfig.user}:${encodeURIComponent(process.env.DB_PASSWORD || dbConfig.password)}@${process.env.DB_HOST || dbConfig.host}/${process.env.DB_NAME || dbConfig.dbName}?retryWrites=true&w=majority`;
+        const uri = `mongodb+srv://admin:${encodeURIComponent('Kaviyashree@24')}@cluster0.ummyuou.mongodb.net/hotelusers?retryWrites=true&w=majority`;
         
         await mongoose.connect(uri, {
             useNewUrlParser: true,
@@ -149,8 +148,7 @@ app.delete('/api/orders/:id', async (req, res) => {
             return res.status(400).json({ error: 'Invalid order ID' });
         }
 
-        const { Types } = require('mongoose');
-        if (!Types.ObjectId.isValid(orderId)) {
+        if (!mongoose.Types.ObjectId.isValid(orderId)) {
             return res.status(400).json({ error: 'Invalid order ID format' });
         }
 

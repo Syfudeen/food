@@ -1,9 +1,10 @@
 {
   "name": "restaurant",
   "version": "1.0.0",
-  "main": "backend.js",
+  "type": "module",
   "scripts": {
-    "start": "node backend.js"
+    "dev": "node api/index.js",
+    "build": "echo 'Build complete'"
   },
   "repository": {
     "type": "git",
