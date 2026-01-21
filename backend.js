@@ -3,7 +3,6 @@ console.log('Starting server...');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dbConfig = require('./database-config');
 
 const app = express();
 
@@ -18,6 +17,9 @@ app.use(express.json());
 
 // Serve static files (HTML, CSS, JS, images)
 app.use(express.static(__dirname));
+
+// MongoDB connection with cloud/local config
+const dbConfig = require('./database-config');
 
 // Order schema for MongoDB
 const orderSchema = new mongoose.Schema({
@@ -35,9 +37,13 @@ const orderSchema = new mongoose.Schema({
 const Order = mongoose.model('Order', orderSchema);
 
 function startServer() {
-    // Redirect root to index.html
+    // Root route for API health check
     app.get('/', (req, res) => {
-        res.redirect('/index.html');
+        res.json({ 
+            message: 'Restaurant API is running',
+            timestamp: new Date().toISOString(),
+            endpoints: ['/test', '/health', '/orders', '/send-order']
+        });
     });
 
     app.post('/send-order', async (req, res) => {
@@ -121,6 +127,35 @@ function startServer() {
         });
     });
 
+    // Health check endpoint for Vercel
+    app.get('/health', (req, res) => {
+        res.status(200).json({ 
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            env: process.env.NODE_ENV || 'development'
+        });
+    });
+
+    // Debug endpoint to check database connection
+    app.get('/debug-db', async (req, res) => {
+        try {
+            console.log('🔍 Debug: Checking database connection...');
+            const count = await Order.countDocuments();
+            console.log('🔍 Total orders in DB:', count);
+            const all = await Order.find().limit(3);
+            console.log('🔍 Sample orders:', all);
+            res.json({ 
+                message: 'Database debug info',
+                totalOrders: count,
+                sampleOrders: all,
+                connection: 'Atlas'
+            });
+        } catch (err) {
+            console.error('🔍 Debug error:', err);
+            res.status(500).json({ error: err.message });
+        }
+    });
+
     
     // Delete single order endpoint
     app.delete('/orders/:id', async (req, res) => {
@@ -165,12 +200,14 @@ function startServer() {
 }
 
 // Connect to MongoDB and start server
-const { getConfig, getMongoURI } = dbConfig;
-mongoose.connect(getMongoURI(getConfig()), {
+const uri = `mongodb+srv://${process.env.DB_USER || dbConfig.user}:${encodeURIComponent(process.env.DB_PASSWORD || dbConfig.password)}@${process.env.DB_HOST || dbConfig.host}/${process.env.DB_NAME || dbConfig.dbName}?retryWrites=true&w=majority`;
+console.log('🔗 Connecting to MongoDB with URI:', uri);
+
+mongoose.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
-    console.log('✅ MongoDB connected');
+    console.log('✅ MongoDB Atlas connected');
     startServer();
 }).catch(err => {
     console.error('❌ MongoDB connection failed:', err);

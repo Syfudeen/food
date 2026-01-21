@@ -13,9 +13,9 @@
     }
   ],
   "env": {
-    "DB_HOST": "@mongodb_host",
-    "DB_USER": "@mongodb_user",
-    "DB_PASSWORD": "@mongodb_password",
-    "DB_NAME": "@mongodb_database"
+    "DB_HOST": "cluster0.ummyuou.mongodb.net",
+    "DB_USER": "admin",
+    "DB_PASSWORD": "Kaviyashree@24",
+    "DB_NAME": "hotelusers"
   }
 }
